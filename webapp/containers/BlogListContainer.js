@@ -5,15 +5,15 @@ import BlogList from '../components/BlogList'
 var blogId = 2;
 
 const mapStateToProps = (state) => {
-  var currentCategory = state.categories.filter((category) => {
-      return category.isActive;
+  var currentCategory = state.categories.list.filter((category) => {
+      return category.isActive === 'true' || category.isActive === true;
   })[0];
   var currentCategoryId = currentCategory.id;
   return {
-    blogs: state.blogs.filter((blog) => {
-      return blog.categoryId == currentCategoryId;
-    }),
-    currentCategoryId: currentCategoryId
+      blogs: state.blogs.list.filter((blog) => {
+        return blog.categoryId == currentCategoryId;
+      }),
+      currentCategoryId: currentCategoryId
   }
 }
 

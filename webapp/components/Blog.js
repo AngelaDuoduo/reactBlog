@@ -14,7 +14,7 @@ class Blog extends Component  {
 
         var blogName = '', blogContent = '';      
 
-        if (blog.isEditing) {
+        if (blog.isEditing === 'true' || blog.isEditing === true) {
             blogName = (<input type="text" defaultValue={blog.name} onChange={this.props.handleNameChange}/>);
             blogContent = (<textarea type="text" value={blog.content} onChange={this.props.handleTextChange}></textarea>);
         } else {

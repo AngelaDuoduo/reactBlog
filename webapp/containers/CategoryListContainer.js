@@ -1,14 +1,14 @@
 import { connect } from 'react-redux'
 import { addCategory, activeCategory, deleteCategory, 
     activeBlog, deleteBlogs, editCategoryBegin, 
-    editCategoryName, editCategoryFinish} from '../actions'
+    editCategoryName, saveCategory} from '../actions'
 import CategoryList from '../components/CategoryList'
 
 var categoryId = 2; 
 
 const mapStateToProps = (state) => {
   return {
-    categories: state.categories.filter((category) => {
+    categories: state.categories.list.filter((category) => {
         return category.parentId == -1;
     })
   };
@@ -31,7 +31,7 @@ const mapDispatchToProps = (dispatch) => {
     },
 
     onCategorySelect: (category) => {
-       if (!category.isActive) {
+       if (!category.isActive || category.isActive === 'false') {
           dispatch(activeCategory(category));
           dispatch(activeBlog({categoryId: category.id}));
        }       
@@ -52,7 +52,7 @@ const mapDispatchToProps = (dispatch) => {
        dispatch(editCategoryName(category, event.target.value));
     },
     onCategorySave: (category) => {
-       dispatch(editCategoryFinish(category));
+       dispatch(saveCategory(category));
     }
   }
 }

@@ -8,11 +8,11 @@ const CategoryList = ({ categories, onAddClick, onCategorySelect, onCategoryEdit
          categories.map(function(item, index) {
             var categoryClass = classNames({
                [style['category-item']]: true,
-               [style['active']]: item.isActive
+               [style['active']]: item.isActive === true || item.isActive === 'true'
             });
 
             var itemDOM = null, editBtn = null;
-            if (item.isEditing) {
+            if (item.isEditing === 'true' || item.isEditing === true) {
                 itemDOM = (<input className={style['category-input']} defaultValue={item.name} onClick={(event) => {event.stopPropagation();}} onChange={(event) => handleNameChange(item, event)} />)
                 editBtn = (<div className={style['category-edit']} onClick={(event) => {event.stopPropagation(); onCategorySave(item);}}>保存</div>)
             } else {
@@ -20,10 +20,12 @@ const CategoryList = ({ categories, onAddClick, onCategorySelect, onCategoryEdit
                 editBtn = (<div className={style['category-edit']} onClick={(event) => {event.stopPropagation(); onCategoryEdit(item);}}>编辑</div>)
             }
 
+            var showMenu = !item.isDefault || item.isDefault === 'false';
+
             return (
               <div key={index} className={categoryClass} onClick={() => onCategorySelect(item)}>
                 {itemDOM}
-                {!item.isDefault 
+                {showMenu
                   && 
                   (<div>
                       {editBtn}

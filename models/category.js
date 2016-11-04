@@ -1,5 +1,3 @@
-var mongodb = require('./db');
-
 function Category(category) {
 	this.categoryId = category.categoryId;
 	this.name = category.name;
@@ -21,70 +19,12 @@ Category.prototype.save = function(callback) {
 		createTime: this.createTime
 	};
 
-	mongodb.open(function(err, db) {
-		if (err) {
-			return callback(err);
-		}
-		//读取集合.第一个参数值应该是什么？
-		db.collection('categories', function(err, collection) {
-			if (err) {
-				mongodb.close();
-				return callback(err);
-			}
-			collection.insert(category, {
-				safe: true
-			}, function(err, category) {
-				mongodb.close();
-				if (err) {
-					return callback(err);
-				}
-				callback(null, category[0]);
-			});
-		});
-	});
 };
 
 Category.getSingleDoc = function(options, callback) {
 	options = options || {};
-	mongodb.open(function(err, db) {
-		if (err) {
-			mongodb.close();
-			return callback(err);
-		}
-		db.collection('categories', function(err, collection) {
-			if (err) {
-				mongodb.close();
-				return callback(err);
-			}
-			collection.findOne(options, function(err, category) {
-				mongodb.close();
-				if (err) {
-					return callback(err);
-				}
-				callback(null, category);
-			});
-		});
-	});
 };
 
 Category.getMultiDoc = function(options, callback) {
 	options = options || {};
-	mongodb.open(function(err, db) {
-		if (err) {
-			return callback(err);
-		}
-		db.collection('categories', function(err, collection) {
-			if (err) {
-				mongodb.close();
-				return callback(err);
-			}
-			collection.find(options, function(err, category) {
-				mongodb.close();
-				if (err) {
-					return callback(err);
-				}
-				callback(null, category);
-			});
-		});
-	});
 }

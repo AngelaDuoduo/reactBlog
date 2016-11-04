@@ -10,7 +10,7 @@ const BlogList = ({ blogs, onAddClick, onBlogSelect, onBlogDelete}) => (
             var createTime = Util.ms2DateString(item.createTime);
             var blogClass = classNames({
                [style['blog-item']]: true,
-               [style['active']]: item.isActive
+               [style['active']]: item.isActive === 'true' || item.isActive === true
             });
 
             return (
