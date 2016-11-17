@@ -1,14 +1,5 @@
-//么有任何dispatch的时候程序就是从reducer的init取数据嘛？
 const initState = {
-    list: [{
-        id: 1,
-        categoryId: 1,
-        name: '第一篇博客',
-        createTime: 1472106634420,
-        content: '这里是第一篇博客的内容',
-        isActive: true,
-        isEditing: false
-    }],
+    list: [],
     isFetching: false,
     updateTime: new Date().getTime()
 };
@@ -37,17 +28,19 @@ const getActiveBlog = (list) => {
 
 const blogs = (state = initState, action) => {
   switch (action.type) {
-    case 'ADD_BLOG_BEGIN':
+    case 'GET_BLOG_LIST_BEGIN':
         return Object.assign({}, state, {isFetching: true});
-    case 'ADD_BLOG_FINISH':
+
+    case 'GET_BLOG_LIST_FINISH':
         return Object.assign({}, state, {
-            list: [
-                ...state.list,
-                action.blog
-            ],
+            list: action.blogs,
             isFetching: false,
             updateTime: new Date().getTime()
         });
+    case 'ADD_BLOG_BEGIN':
+        return Object.assign({}, state, {isFetching: true});
+    case 'ADD_BLOG_FINISH':
+        return Object.assign({}, state, {isFetching: false});
     //state的引用需要改，state中每个元素如果需要修改也需要创建新引用
     case 'EDIT_BLOG_BEGIN':
         var newList = changeAttr(state.list, action.blog.id, 'isEditing', true);
@@ -73,6 +66,7 @@ const blogs = (state = initState, action) => {
         return Object.assign({}, state, {isFetching: true});
 
     case 'SAVE_BLOG_FINISH':
+        action.blog.isEditing = false;
         var newList = changeAttr(state.list, action.blog.id, action.blog);
         return Object.assign({}, state, {list: newList, isFetching: false, updateTime: new Date().getTime()});
 
@@ -85,14 +79,11 @@ const blogs = (state = initState, action) => {
         });
         return Object.assign({}, state, {list: newList, isFetching: false, updateTime: new Date().getTime()});
 
-    case 'DELETE_BLOGS':
-        var newBlogs = [];
-        state.list.forEach((blog) => {
-            if (blog.categoryId != action.categoryId) {
-                newBlogs.push(Object.assign({}, blog));
-            }
-        });
-        return Object.assing({}, state, {list: newBlogs});
+    case 'DELETE_BLOGS_BEGIN':
+        return Object.assign({}, state, {isFetching: true});
+
+    case 'DELETE_BLOGS_FINISH':
+        return Object.assign({}, state, {isFetching: false});
 
     case 'ACTIVE_BLOG':
         var targetId = -1;

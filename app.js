@@ -4,16 +4,11 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var livereload = require('connect-livereload');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
-
-app.use(livereload({
-   port: 35729
-}));
 
 app.use(logger('dev'));
 app.use(bodyParser.json());

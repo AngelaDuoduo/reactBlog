@@ -16,6 +16,7 @@ var Util = {
 
 	},
 	ajax: function(url, params, type) {
+		params = params || {};
 		var defer = $.Deferred();
 		var options = {
 			url: url,

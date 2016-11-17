@@ -1,11 +1,54 @@
 import Util from '../util.js'
 
+const isCategoryActive = (category) => {
+    return category.isActive === true || category.isActive === 'true';
+}
+
+const isBlogActive = (blog) => {
+    return blog.isActive === true || blog.isActive === 'true';
+}
+
+export const activeCategory = (category) => {
+    return {
+        type: 'ACTIVE_CATEGORY',
+        category
+    }
+}
+
+export const getCategories = (category) => {
+  return dispatch => {
+     dispatch({type: 'GET_CATEGORY_LIST_BEGIN'});
+     return Util.ajax('/xhr/getCategoryList')
+              .then(res => {
+                  dispatch({type: 'GET_CATEGORY_LIST_FINISH', categories: res.data});
+                  if (category) {
+                     dispatch(activeCategory(category));
+                     dispatch(activeBlog({categoryId: res.data.id}));
+                  }                  
+              });
+  }
+}
+
+export const getBlogs = (blog) => {
+    return dispatch => {
+        dispatch({type: 'GET_BLOG_LIST_BEGIN'});
+        return Util.ajax('/xhr/getBlogList')
+                .then(res => {
+                    dispatch({type: 'GET_BLOG_LIST_FINISH', blogs: res.data});
+                    if (blog) {
+                       dispatch(activeBlog(blog));
+                    } 
+                });
+    }
+}
+
 export const addCategory = (category) => {
   return dispatch => {
       dispatch({type: 'ADD_CATEGORY_BEGIN'});
       return Util.ajax('/xhr/upsertCategory', category)
               .then(res => {
-                  dispatch({type: 'ADD_CATEGORY_FINISH', category: res.data})
+                  dispatch({type: 'ADD_CATEGORY_FINISH', category: res.data});
+                  dispatch(getCategories(res.data));
               });
   }
 }
@@ -36,20 +79,17 @@ export const saveCategory = (category) => {
   }
 }
 
-export const activeCategory = (category) => {
-    return {
-        type: 'ACTIVE_CATEGORY',
-        category
-    }
-}
-
-
 export const deleteCategory = (category) => {
   return dispatch => {
       dispatch({type: 'DELETE_CATEGORY_BEGIN'});
       return Util.ajax('/xhr/deleteCategory', category)
             .then(res => {
                 dispatch({type: 'DELETE_CATEGORY_FINISH', category: res.data});
+                if (isCategoryActive(category)) {
+                    dispatch(getCategories({id: 1}));     
+                } else {
+                    dispatch(getCategories(category));
+                }                                  
             });
   }
 }
@@ -60,6 +100,7 @@ export const addBlog = (blog) => {
         return Util.ajax('/xhr/upsertBlog', blog)
               .then(res => {
                   dispatch({type: 'ADD_BLOG_FINISH', blog: res.data});
+                  dispatch(getBlogs(res.data));
               });
     }
 }
@@ -107,9 +148,13 @@ export const deleteBlog = (blog) => {
 }
 
 export const deleteBlogs = (categoryId) => {
-    return {
-        type: 'DELETE_BLOGS',
-        categoryId
+    return dispatch => {
+        dispatch({type: 'DELETE_BLOGS_BEGIN'});
+        return Util.ajax('/xhr/deletBlogsByCategoryId', categoryId)
+                .then(res => {
+                    dispatch({type: 'DELETE_BLOGS_FINISH'});
+                    dispatch(getBlogs());
+                });
     }
 }
 

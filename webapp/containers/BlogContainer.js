@@ -5,7 +5,7 @@ import Blog from '../components/Blog'
 
 const mapStateToProps = (state) => {
   var activeBlogList = state.blogs.list.filter((blog) => {
-      return blog.isActive;
+      return blog.isActive === 'true' || blog.isActive === true;
   });
 
   if (activeBlogList.length > 0) {

@@ -1,56 +1,60 @@
 import { connect } from 'react-redux'
-import { addCategory, activeCategory, deleteCategory, 
+import { getCategories, addCategory, activeCategory, deleteCategory, 
     activeBlog, deleteBlogs, editCategoryBegin, 
     editCategoryName, saveCategory} from '../actions'
 import CategoryList from '../components/CategoryList'
 
-var categoryId = 2; 
+const isCategoryActive = (category) => {
+    return category.isActive === 'true'|| category.isActive === true;
+}
 
 const mapStateToProps = (state) => {
   return {
-    categories: state.categories.list.filter((category) => {
-        return category.parentId == -1;
-    })
+    categories: state.categories.list
   };
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getCategoryList: () => {
+       dispatch(getCategories());
+    },
+
     onAddClick: () => {
       var category = {
-          id: categoryId++,
+          id: 0,
           parentId: -1,
-          name: '第一个分类',
+          name: '新的分类',
           blogNum: 1,
           isDefault: false,
-          createTime: 1472006259800,
+          createTime: new Date().getTime(),
           isActive: false,
           isEditing: false
       };
+      //添加分类、重新获取分类列表，激活当前分类
       dispatch(addCategory(category));    
     },
 
     onCategorySelect: (category) => {
-       if (!category.isActive || category.isActive === 'false') {
+       if (!isCategoryActive(category)) {
           dispatch(activeCategory(category));
           dispatch(activeBlog({categoryId: category.id}));
        }       
     },
 
     onCategoryDelete: (category) => {
-        if (category.isActive) {
-           dispatch(activeCategory({id: 1}));
-           dispatch(activeBlog({categoryId: 1}));
-        }
         dispatch(deleteBlogs(category.id));
         dispatch(deleteCategory(category));
     },
+
     onCategoryEdit: (category) => {
        dispatch(editCategoryBegin(category));
     },
+
     handleNameChange: (category, event) => {
        dispatch(editCategoryName(category, event.target.value));
     },
+
     onCategorySave: (category) => {
        dispatch(saveCategory(category));
     }
